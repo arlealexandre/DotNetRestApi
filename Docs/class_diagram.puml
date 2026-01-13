@@ -1,0 +1,58 @@
+@startuml
+' Book
+class Book {
+    + Id : int
+    + Title : string
+    + Year : ushort
+    + ISBN : string?
+    + IsValid() : bool
+}
+
+' Person
+abstract class Person {
+    + Id : int
+    + FirstName : string
+    + LastName : string
+}
+
+' Author
+class Author {
+}
+
+' Illustrator
+class Illustrator {
+}
+
+' Genre
+enum Genre {
+    ACTION
+    COMEDY
+    DRAMA
+    HORROR
+    SCIENCE_FICTION
+}
+
+' Relationship between classes
+Book "*" -- "1..*" Author : written by
+Book "*" -- "1" Illustrator : illustrated by
+Book "*" -- "1..*" Genre : categorized as
+
+' Book notes
+note right of Book
+  **Validation rules :**
+  * Year >= 1450 and <= Current Year
+  * ISBN is 13 digits only if Year >= 1970
+  * ISBN is unique
+  * Title + Year + Author is unique
+end note
+
+' Person notes
+note left of Person
+  Person is an abstract class that models 
+  the basic properties of a person.
+end note
+
+' Inheritance
+Person <|-- Author
+Person <|-- Illustrator
+@enduml
