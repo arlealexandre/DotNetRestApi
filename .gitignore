@@ -483,5 +483,4 @@ $RECYCLE.BIN/
 
 # appsettings.json files
 
-appsettings.*
-appsettings
+appsettings*.json
