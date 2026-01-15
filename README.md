@@ -54,7 +54,7 @@ Technical documentation (UML diagrams) is available in the `Docs` folder. All di
 ## 🚀 Usage (DEV)
 
 1. `cd .\LibraryManagementSystem\`
-2. `dotnet run` -> [http://localhost:5152/index.html](http://localhost:5152/index.html)
+2. `dotnet run` -> [http://localhost:5126/swagger](http://localhost:5126/swagger)
 
 <a name="testing"></a>
 ## 🔬 Testing
