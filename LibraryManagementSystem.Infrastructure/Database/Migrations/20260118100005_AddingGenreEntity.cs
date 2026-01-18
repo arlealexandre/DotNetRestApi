@@ -7,7 +7,7 @@
 namespace LibraryManagementSystem.Infrastructure.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddingGenreEntity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,6 +29,19 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Genres",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Genres", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Illustrators",
                 columns: table => new
                 {
@@ -47,10 +60,9 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PublicationYear = table.Column<int>(type: "int", nullable: false),
                     ISBN = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Genres = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IllustratorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -65,24 +77,48 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BookAuthors",
+                name: "CategorizedAs",
                 columns: table => new
                 {
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    AuthorId = table.Column<int>(type: "int", nullable: false)
+                    BooksId = table.Column<int>(type: "int", nullable: false),
+                    GenresId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BookAuthors", x => new { x.BookId, x.AuthorId });
+                    table.PrimaryKey("PK_CategorizedAs", x => new { x.BooksId, x.GenresId });
                     table.ForeignKey(
-                        name: "FK_BookAuthors_Authors_AuthorId",
-                        column: x => x.AuthorId,
+                        name: "FK_CategorizedAs_Books_BooksId",
+                        column: x => x.BooksId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategorizedAs_Genres_GenresId",
+                        column: x => x.GenresId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WrittenBy",
+                columns: table => new
+                {
+                    AuthorsId = table.Column<int>(type: "int", nullable: false),
+                    BooksId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WrittenBy", x => new { x.AuthorsId, x.BooksId });
+                    table.ForeignKey(
+                        name: "FK_WrittenBy_Authors_AuthorsId",
+                        column: x => x.AuthorsId,
                         principalTable: "Authors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BookAuthors_Books_BookId",
-                        column: x => x.BookId,
+                        name: "FK_WrittenBy_Books_BooksId",
+                        column: x => x.BooksId,
                         principalTable: "Books",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -99,6 +135,18 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Genres",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Action" },
+                    { 2, "Comedy" },
+                    { 3, "Drama" },
+                    { 4, "Horror" },
+                    { 5, "Science-Fiction" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Illustrators",
                 columns: new[] { "Id", "FirstName", "LastName" },
                 values: new object[,]
@@ -107,12 +155,6 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                     { 5, "Gustave", "Doré" },
                     { 6, "Beya", "Rebaï" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BookAuthors_AuthorId_BookId",
-                table: "BookAuthors",
-                columns: new[] { "AuthorId", "BookId" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_IllustratorId",
@@ -127,17 +169,33 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                 filter: "[ISBN] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Books_Title_PublicationYear",
-                table: "Books",
-                columns: new[] { "Title", "PublicationYear" },
+                name: "IX_CategorizedAs_GenresId",
+                table: "CategorizedAs",
+                column: "GenresId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Genres_Name",
+                table: "Genres",
+                column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WrittenBy_BooksId",
+                table: "WrittenBy",
+                column: "BooksId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BookAuthors");
+                name: "CategorizedAs");
+
+            migrationBuilder.DropTable(
+                name: "WrittenBy");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "Authors");

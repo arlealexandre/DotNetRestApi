@@ -31,10 +31,6 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.PrimitiveCollection<string>("Genres")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ISBN")
                         .HasColumnType("nvarchar(450)");
 
@@ -46,7 +42,7 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -56,26 +52,69 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
 
                     b.HasIndex("IllustratorId");
 
-                    b.HasIndex("Title", "PublicationYear")
-                        .IsUnique();
-
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("BookAuthor", b =>
+            modelBuilder.Entity("CategorizedAs", b =>
                 {
-                    b.Property<int>("BookId")
+                    b.Property<int>("BooksId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("GenresId")
                         .HasColumnType("int");
 
-                    b.HasKey("BookId", "AuthorId");
+                    b.HasKey("BooksId", "GenresId");
 
-                    b.HasIndex("AuthorId", "BookId")
+                    b.HasIndex("GenresId");
+
+                    b.ToTable("CategorizedAs");
+                });
+
+            modelBuilder.Entity("Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("BookAuthors");
+                    b.ToTable("Genres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Action"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Comedy"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Drama"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Horror"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Science-Fiction"
+                        });
                 });
 
             modelBuilder.Entity("Person", b =>
@@ -100,6 +139,21 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                     b.ToTable((string)null);
 
                     b.UseTpcMappingStrategy();
+                });
+
+            modelBuilder.Entity("WrittenBy", b =>
+                {
+                    b.Property<int>("AuthorsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BooksId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AuthorsId", "BooksId");
+
+                    b.HasIndex("BooksId");
+
+                    b.ToTable("WrittenBy");
                 });
 
             modelBuilder.Entity("Author", b =>
@@ -167,33 +221,34 @@ namespace LibraryManagementSystem.Infrastructure.Database.Migrations
                     b.Navigation("Illustrator");
                 });
 
-            modelBuilder.Entity("BookAuthor", b =>
+            modelBuilder.Entity("CategorizedAs", b =>
                 {
-                    b.HasOne("Author", "Author")
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("AuthorId")
+                    b.HasOne("Book", null)
+                        .WithMany()
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Book", "Book")
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("BookId")
+                    b.HasOne("Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WrittenBy", b =>
+                {
+                    b.HasOne("Author", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Author");
-
-                    b.Navigation("Book");
-                });
-
-            modelBuilder.Entity("Book", b =>
-                {
-                    b.Navigation("BookAuthors");
-                });
-
-            modelBuilder.Entity("Author", b =>
-                {
-                    b.Navigation("BookAuthors");
+                    b.HasOne("Book", null)
+                        .WithMany()
+                        .HasForeignKey("BooksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Illustrator", b =>

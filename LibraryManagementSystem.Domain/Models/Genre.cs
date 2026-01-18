@@ -1,24 +1,6 @@
-public enum Genre
+public class Genre
 {
-    ACTION,
-    COMEDY,
-    DRAMA,
-    HORROR,
-    SCIENCE_FICTION
-}
-
-public static class GenreExtensions
-{
-    public static string ToString(this Genre genre)
-    {
-        return genre switch
-        {
-            Genre.ACTION => "Action",
-            Genre.COMEDY => "Comedy",
-            Genre.DRAMA => "Drama",
-            Genre.HORROR => "Horror",
-            Genre.SCIENCE_FICTION => "Science-Fiction",
-            _ => genre.ToString()
-        };
-    }
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public IEnumerable<Book> Books { get; set; } = new List<Book>();
 }

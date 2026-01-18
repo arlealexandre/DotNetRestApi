@@ -1,4 +1,4 @@
 public class Author : Person
 {
-    public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
+    public IEnumerable<Book> Books { get; set; } = new List<Book>();
 }

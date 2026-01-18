@@ -1,4 +1,4 @@
 public class Illustrator : Person
 {
-    public ICollection<Book> Books { get; set; } = new List<Book>();
+    public IEnumerable<Book> Books { get; set; } = new List<Book>();
 }

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using LibraryManagementSystem.Infrastructure.Database;
 using LibraryManagementSystem.Application.Interfaces;
 using LibraryManagementSystem.Infrastructure.Repositories;
+using LibraryManagementSystem.Application;
+using LibraryManagementSystem.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +16,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Register the ApplicationDbContext in the Dependency Injection (DI) container using the SQL Server provider
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-// Register the BookRepository in the DI container
-builder.Services.AddScoped<IBookRepository, BookRepository>();
+// Register Use Cases in the DI container
+builder.Services.AddUseCases();
+
+// Register Repositories in the DI container
+builder.Services.AddRepositories();
 
 builder.Services.AddControllers();
 
